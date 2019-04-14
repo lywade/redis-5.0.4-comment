@@ -1055,7 +1055,7 @@ void databasesCron(void) {
  * a lot faster than calling time(NULL) */
 void updateCachedTime(void) {
     time_t unixtime = time(NULL);
-    atomicSet(server.unixtime,unixtime);
+    atomicSet(server.unixtime, unixtime);
     server.mstime = mstime();
 
     /* To get information about daylight saving time, we need to call localtime_r
@@ -1063,7 +1063,7 @@ void updateCachedTime(void) {
      * since we will never fork() while here, in the main thread. The logging
      * function will call a thread safe version of localtime that has no locks. */
     struct tm tm;
-    localtime_r(&server.unixtime,&tm);
+    localtime_r(&server.unixtime, &tm);
     server.daylight_active = tm.tm_isdst;
 }
 
@@ -1517,12 +1517,12 @@ void createSharedObjects(void) {
 void initServerConfig(void) {
     int j;
 
-    pthread_mutex_init(&server.next_client_id_mutex,NULL);
-    pthread_mutex_init(&server.lruclock_mutex,NULL);
-    pthread_mutex_init(&server.unixtime_mutex,NULL);
+    pthread_mutex_init(&server.next_client_id_mutex, NULL);
+    pthread_mutex_init(&server.lruclock_mutex, NULL);
+    pthread_mutex_init(&server.unixtime_mutex, NULL);
 
     updateCachedTime();
-    getRandomHexChars(server.runid,CONFIG_RUN_ID_SIZE);
+    getRandomHexChars(server.runid, CONFIG_RUN_ID_SIZE);
     server.runid[CONFIG_RUN_ID_SIZE] = '\0';
     changeReplicationId();
     clearReplicationId2();
@@ -4034,18 +4034,21 @@ int main(int argc, char **argv) {
 
     /* We need to initialize our libraries, and the server configuration. */
 #ifdef INIT_SETPROCTITLE_REPLACEMENT
+	/* redis提供了修改自身进程名的功能，此处就是为此功能做的提前准备，
+	   把argv和environ内容另存起来 */
     spt_init(argc, argv);
 #endif
-    setlocale(LC_COLLATE,"");
+
+    setlocale(LC_COLLATE, "");
     tzset(); /* Populates 'timezone' global. */
-    zmalloc_set_oom_handler(redisOutOfMemoryHandler);
+    zmalloc_set_oom_handler(redisOutOfMemoryHandler);  /* 设置OOM处理函数 */
     srand(time(NULL)^getpid());
-    gettimeofday(&tv,NULL);
+    gettimeofday(&tv, NULL);
 
     char hashseed[16];
-    getRandomHexChars(hashseed,sizeof(hashseed));
+    getRandomHexChars(hashseed, sizeof(hashseed));
     dictSetHashFunctionSeed((uint8_t*)hashseed);
-    server.sentinel_mode = checkForSentinelMode(argc,argv);
+    server.sentinel_mode = checkForSentinelMode(argc, argv);
     initServerConfig();
     moduleInitModulesSystem();
 

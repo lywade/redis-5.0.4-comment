@@ -572,8 +572,8 @@ void getRandomBytes(unsigned char *p, size_t len) {
          * the same seed with a progressive counter. For the goals of this
          * function we just need non-colliding strings, there are no
          * cryptographic security needs. */
-        FILE *fp = fopen("/dev/urandom","r");
-        if (fp == NULL || fread(seed,sizeof(seed),1,fp) != 1) {
+        FILE *fp = fopen("/dev/urandom", "r");
+        if (fp == NULL || fread(seed, sizeof(seed), 1, fp) != 1) {
             /* Revert to a weaker seed, and in this case reseed again
              * at every call.*/
             for (unsigned int j = 0; j < sizeof(seed); j++) {
@@ -582,7 +582,8 @@ void getRandomBytes(unsigned char *p, size_t len) {
                 pid_t pid = getpid();
                 seed[j] = tv.tv_sec ^ tv.tv_usec ^ pid ^ (long)fp;
             }
-        } else {
+        }
+        else {
             seed_initialized = 1;
         }
         if (fp) fclose(fp);
@@ -613,8 +614,11 @@ void getRandomHexChars(char *p, size_t len) {
     char *charset = "0123456789abcdef";
     size_t j;
 
-    getRandomBytes((unsigned char*)p,len);
-    for (j = 0; j < len; j++) p[j] = charset[p[j] & 0x0F];
+    getRandomBytes((unsigned char*)p, len);
+    for (j = 0; j < len; j++)
+	{
+        p[j] = charset[p[j] & 0x0F];
+	}
 }
 
 /* Given the filename, return the absolute path as an SDS string, or NULL
